@@ -2,30 +2,29 @@ package group2hotel;
 
 import javax.swing.*;
 
-public class ViewPaymentsPage {
-    private JFrame frame;
+public class ViewPaymentsPage extends JFrame {
+    private String adminUsername;
 
-    public ViewPaymentsPage() {
-        frame = new JFrame("View Payments");
-        frame.setSize(600, 400);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(null);
+    public ViewPaymentsPage(String adminUsername) {
+        this.adminUsername = adminUsername;
 
-        JLabel label = new JLabel("View Payments - (Functionality Not Yet Implemented)");
+        setTitle("View Payments");
+        setSize(500, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(null);
+
+        JLabel label = new JLabel("View Payments Page for Admin: " + adminUsername);
         label.setBounds(50, 50, 400, 30);
-        frame.add(label);
+        add(label);
 
         JButton backButton = new JButton("Back");
-        backButton.setBounds(50, 100, 100, 30);
-        frame.add(backButton);
+        backButton.setBounds(50, 300, 100, 30);
+        backButton.addActionListener(e -> {
+            dispose(); // Close this page
+            new AdminDashboard(adminUsername).setVisible(true); // Go back to Admin Dashboard
+        });
+        add(backButton);
 
-        backButton.addActionListener(e -> goBack());
-
-        frame.setVisible(true);
-    }
-
-    private void goBack() {
-        frame.dispose();
-        new AdminDashboard();
+        setVisible(true);
     }
 }

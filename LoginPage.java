@@ -61,19 +61,23 @@ public class LoginPage {
                 frame.dispose();
                 switch (userType) {
                     case "admin":
-                        new AdminDashboard();
+                        new AdminDashboard(username); // Pass username to AdminDashboard
                         break;
                     case "guest":
-                        new GuestDashboard(username);
+                        new GuestDashboard(username); // Pass username to GuestDashboard
                         break;
                     case "staff":
-                        new StaffDashboard();
+                        new StaffDashboard(username); // Pass username to StaffDashboard
                         break;
+                    default:
+                        JOptionPane.showMessageDialog(frame, "Unknown user type: " + userType, "Login Error", JOptionPane.ERROR_MESSAGE);
+                        frame.setVisible(true);
                 }
             } else {
                 JOptionPane.showMessageDialog(frame, "Invalid Username or Password", "Login Error", JOptionPane.ERROR_MESSAGE);
             }
         } catch (SQLException e) {
+            JOptionPane.showMessageDialog(frame, "Database error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }

@@ -4,97 +4,98 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.sql.*;
 
-public class CreateAccountPage {
-    private JFrame frame;
+public class CreateAccountPage extends JFrame {
     private JTextField firstNameField, lastNameField, usernameField, emailField, phoneField, addressField;
     private JPasswordField passwordField;
     private JComboBox<String> userTypeBox;
+    private String adminUsername; // Admin's username
 
-    public CreateAccountPage() {
-        frame = new JFrame("Create Account");
-        frame.setSize(500, 550);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(null);
+    public CreateAccountPage(String adminUsername) {
+        this.adminUsername = adminUsername; // Save admin's username
+        setTitle("Create Account");
+        setSize(500, 550);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(null);
 
         JLabel firstNameLabel = new JLabel("First Name:");
         firstNameLabel.setBounds(50, 50, 100, 30);
-        frame.add(firstNameLabel);
+        add(firstNameLabel);
 
         firstNameField = new JTextField();
         firstNameField.setBounds(150, 50, 200, 30);
-        frame.add(firstNameField);
+        add(firstNameField);
 
         JLabel lastNameLabel = new JLabel("Last Name:");
         lastNameLabel.setBounds(50, 100, 100, 30);
-        frame.add(lastNameLabel);
+        add(lastNameLabel);
 
         lastNameField = new JTextField();
         lastNameField.setBounds(150, 100, 200, 30);
-        frame.add(lastNameField);
+        add(lastNameField);
 
         JLabel usernameLabel = new JLabel("Username:");
         usernameLabel.setBounds(50, 150, 100, 30);
-        frame.add(usernameLabel);
+        add(usernameLabel);
 
         usernameField = new JTextField();
         usernameField.setBounds(150, 150, 200, 30);
-        frame.add(usernameField);
+        add(usernameField);
 
         JLabel passwordLabel = new JLabel("Password:");
         passwordLabel.setBounds(50, 200, 100, 30);
-        frame.add(passwordLabel);
+        add(passwordLabel);
 
         passwordField = new JPasswordField();
         passwordField.setBounds(150, 200, 200, 30);
-        frame.add(passwordField);
+        add(passwordField);
 
         JLabel userTypeLabel = new JLabel("User Type:");
         userTypeLabel.setBounds(50, 250, 100, 30);
-        frame.add(userTypeLabel);
+        add(userTypeLabel);
 
         userTypeBox = new JComboBox<>(new String[]{"admin", "staff", "guest"});
         userTypeBox.setBounds(150, 250, 200, 30);
-        frame.add(userTypeBox);
+        add(userTypeBox);
 
         // Guest-Specific Fields
         JLabel emailLabel = new JLabel("Email:");
         emailLabel.setBounds(50, 300, 100, 30);
-        frame.add(emailLabel);
+        add(emailLabel);
 
         emailField = new JTextField();
         emailField.setBounds(150, 300, 200, 30);
-        frame.add(emailField);
+        add(emailField);
 
         JLabel phoneLabel = new JLabel("Phone:");
         phoneLabel.setBounds(50, 350, 100, 30);
-        frame.add(phoneLabel);
+        add(phoneLabel);
 
         phoneField = new JTextField();
         phoneField.setBounds(150, 350, 200, 30);
-        frame.add(phoneField);
+        add(phoneField);
 
         JLabel addressLabel = new JLabel("Address:");
         addressLabel.setBounds(50, 400, 100, 30);
-        frame.add(addressLabel);
+        add(addressLabel);
 
         addressField = new JTextField();
         addressField.setBounds(150, 400, 200, 30);
-        frame.add(addressField);
+        add(addressField);
 
         JButton createButton = new JButton("Create Account");
         createButton.setBounds(150, 450, 150, 30);
-        frame.add(createButton);
+        add(createButton);
 
         JButton backButton = new JButton("Back");
         backButton.setBounds(50, 450, 80, 30);
-        frame.add(backButton);
+        add(backButton);
 
         // Hide guest-specific fields for admin and staff
         userTypeBox.addActionListener(e -> toggleGuestFields());
         createButton.addActionListener(e -> createAccount());
         backButton.addActionListener(e -> goBack());
 
-        frame.setVisible(true);
+        setVisible(true);
         toggleGuestFields(); // Ensure fields are hidden initially for non-guest types
     }
 
@@ -116,12 +117,12 @@ public class CreateAccountPage {
         String address = addressField.getText();
 
         if (firstName.isEmpty() || lastName.isEmpty() || username.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(frame, "All fields are required!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "All fields are required!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         if ("guest".equals(userType) && (email.isEmpty() || phone.isEmpty() || address.isEmpty())) {
-            JOptionPane.showMessageDialog(frame, "Email, Phone, and Address are required for guests!", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Email, Phone, and Address are required for guests!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -140,17 +141,13 @@ public class CreateAccountPage {
             stmt.setString(8, "guest".equals(userType) ? address : null);
 
             stmt.executeUpdate();
-            JOptionPane.showMessageDialog(frame, "Account created successfully!");
+            JOptionPane.showMessageDialog(this, "Account created successfully!");
 
-            frame.dispose();
-            if ("guest".equals(userType)) {
-                new GuestDashboard(username);
-            } else {
-                new AdminDashboard();
-            }
+            dispose();
+            new AdminDashboard(adminUsername).setVisible(true); // Go back to AdminDashboard
         } catch (SQLException e) {
             if (e.getMessage().contains("Duplicate entry")) {
-                JOptionPane.showMessageDialog(frame, "Username already exists!", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "Username already exists!", "Error", JOptionPane.ERROR_MESSAGE);
             } else {
                 e.printStackTrace();
             }
@@ -158,7 +155,7 @@ public class CreateAccountPage {
     }
 
     private void goBack() {
-        frame.dispose();
-        new AdminDashboard();
+        dispose();
+        new AdminDashboard(adminUsername).setVisible(true); // Pass admin username back to AdminDashboard
     }
 }
